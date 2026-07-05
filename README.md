@@ -6,7 +6,7 @@ This project demonstrates the design and implementation of a serverless backend 
 
 images/architecture-diagram.png
 ``
-Architecture Overview:
+## Architecture Overview:
 The solution consists of the following AWS services:
 •	Amazon API Gateway serves as the public HTTPS endpoint.
 •	AWS Lambda contains the application logic and processes CRUD requests.
