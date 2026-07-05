@@ -20,8 +20,8 @@ The solution consists of the following AWS services:
 4.	AWS Lambda reads from or writes to Amazon DynamoDB.
 5.	The response is returned to the client through Amazon API Gateway.
 6.	Amazon CloudWatch captures logs and metrics for monitoring and troubleshooting.
-AWS Component setup
-Create Custom Policy
+## AWS Component setup
+##Create Custom Policy
 We need to create a custom policy for least privilege
 1)To enforce least privilege access, create a custom IAM policy by navigating to the Policies page in the IAM console. Select Create policy, switch to the JSON editor and paste the required policy definition to precisely control permissions. 
 
