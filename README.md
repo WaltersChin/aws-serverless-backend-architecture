@@ -6,3 +6,10 @@ This project demonstrates the design and implementation of a serverless backend 
 
 images/architecture-diagram.png
 ``
+Architecture Overview:
+The solution consists of the following AWS services:
+•	Amazon API Gateway serves as the public HTTPS endpoint.
+•	AWS Lambda contains the application logic and processes CRUD requests.
+•	Amazon DynamoDB stores application data using a serverless NoSQL database.
+•	AWS IAM provides secure, least-privilege access between services.
+•	Amazon CloudWatch captures logs and operational metrics for monitoring and troubleshooting.
