@@ -153,7 +153,7 @@ An API consists of resources and methods organized into a hierarchical structure
 <img width="1009" height="243" alt="create-resource-name" src="https://github.com/user-attachments/assets/bc56146e-3a6a-4a14-bceb-94aaf8353684" />
 
 
-## 7.Let's create a POST Method for our API. With the "/dynamodbmanager" resource selected, click "Create Method".
+ 7.Let's create a POST Method for our API. With the "/dynamodbmanager" resource selected, click "Create Method".
 <img width="439" height="102" alt="create-method-1 jpg" src="https://github.com/user-attachments/assets/ec245ca0-b330-44c0-b7ae-9ba4fb6b670c" />
  
 ## 8.Configure POST Method (Lambda Integration)
