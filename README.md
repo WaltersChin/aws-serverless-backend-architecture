@@ -23,13 +23,44 @@ The solution consists of the following AWS services:
 ## AWS Component setup
 Create Custom Policy
 We need to create a custom policy for least privilege
-1)To enforce least privilege access, create a custom IAM policy by navigating to the Policies page in the IAM console. Select Create policy, switch to the JSON editor and paste the required policy definition to precisely control permissions. 
+1)To enforce least privilege access, create a custom IAM policy by navigating to the Policies page in the IAM console. Select Create policy, switch to the JSON editor and paste the required policy definition to precisely control permissions.
+
 <img width="891" height="447" alt="create-policy" src="https://github.com/user-attachments/assets/df25e591-f59d-45e2-8e1b-e4241105d9d9" />
 
-
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+    {
+      "Sid": "Stmt1428341300017",
+      "Action": [
+        "dynamodb:DeleteItem",
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:UpdateItem"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    },
+    {
+      "Sid": "",
+      "Resource": "*",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Effect": "Allow"
+    }
+    ]
+    }
+```
 
 ## 2 Create Lambda Execution Role (Least Privilege Access)
 To provision the Lambda function with only the permissions it requires, create a least privilege IAM execution role. From the IAM console, open the Roles section, choose Create role, select AWS Service → Lambda as the trusted entity, and attach the previously created lambda-custom-policy. This ensures the function can access only the AWS resources explicitly defined in the policy.
+
 <img width="970" height="378" alt="create-lambda-role" src="https://github.com/user-attachments/assets/b3c1ebb4-61fa-42ed-854d-8e5f7e2870a6" />
 
 o	Role name – lambda-apigateway-role.
@@ -37,19 +68,62 @@ o	Click "Create role"
 ## Create Lambda Function
 ## To create the function
 1.	Click "Create function" in AWS Lambda Console
+   
 <img width="944" height="184" alt="create-lambda" src="https://github.com/user-attachments/assets/ea9bf933-dc03-429c-abda-f2c10ff065bf" />
 
 
-2.	Select "Author from scratch". For example Use name LambdaFunctionOverHttps, select Python 3.13 or the version that works for you as Runtime. Under Permissions, click the arrow beside "Change default execution role", then "use an existing role" and select lambda-apigateway-role, from the drop down.
-3.	## Create Function.
+3.	Select "Author from scratch". For example Use name LambdaFunctionOverHttps, select Python 3.13 or the version that works for you as Runtime. Under Permissions, click the arrow beside "Change default execution role", then "use an existing role" and select lambda-apigateway-role, from the drop down.
+4.	## Create Function.
+   
    <img width="978" height="631" alt="lambda-basic-info" src="https://github.com/user-attachments/assets/5426badd-a49a-431a-84c9-33bae80a8b42" />
 
 
 4 . Replace the boilerplate coding with the following code snippet and click "Deploy"
+
+**Example Python Code**
+```python
+from __future__ import print_function
+import boto3
+import json
+
+print('Loading function')
+
+
+def lambda_handler(event, context):
+    '''Provide an event that contains the following keys:
+
+      - operation: one of the operations in the operations dict below
+      - tableName: required for operations that interact with DynamoDB
+      - payload: a parameter to pass to the operation being performed
+    '''
+    #print("Received event: " + json.dumps(event, indent=2))
+
+    operation = event['operation']
+
+    if 'tableName' in event:
+        dynamo = boto3.resource('dynamodb').Table(event['tableName'])
+
+    operations = {
+        'create': lambda x: dynamo.put_item(**x),
+        'read': lambda x: dynamo.get_item(**x),
+        'update': lambda x: dynamo.update_item(**x),
+        'delete': lambda x: dynamo.delete_item(**x),
+        'list': lambda x: dynamo.scan(**x),
+        'echo': lambda x: x,
+        'ping': lambda x: 'pong'
+    }
+
+    if operation in operations:
+        return operations[operation](event.get('payload'))
+    else:
+        raise ValueError('Unrecognized operation "{}"'.format(operation))
+```
+
 <img width="975" height="501" alt="lambda-code-paste" src="https://github.com/user-attachments/assets/53fac600-5997-4bf9-bdc2-a111606801ce" />
 
 ## Test the Lambda Function (Initial Echo Validation)
 Before integrating DynamoDB or API Gateway, validate the Lambda function using a simple echotest. Open the Test tab in the Lambda console, create a new event (for example echotest), and provide a JSON payload. The operation field determines the action, and in this phase the function should simply return the input payload, confirming that the handler executes correctly.
+```json
 {
     "operation": "echo",
     "payload": {
@@ -57,6 +131,7 @@ Before integrating DynamoDB or API Gateway, validate the Lambda function using a
         "somekey2": "somevalue2"
     }
 }
+```
 4.	After running the test event successfully, it will produce the output below
 <img width="476" height="230" alt="execute-test jpg" src="https://github.com/user-attachments/assets/9dc89b65-6907-4a29-8c21-0d4264f6be0f" />
 
@@ -103,13 +178,26 @@ API can be executed locally using either Postman or Curl. In Postman, choose POS
 
  
 ## To run this from a terminal using Curl, run the below code
-$ curl -X POST -d "{\"operation\":\"create\",\"tableName\":\"lambda-apigateway\",\"payload\":{\"Item\":{\"id\":\"1\",\"name\":\"Bob\"}}}" https://$API.execute-api.$REGION.amazonaws.com/prod/DynamoDBManager
+ ```
+    $ curl -X POST -d "{\"operation\":\"create\",\"tableName\":\"lambda-apigateway\",\"payload\":{\"Item\":{\"id\":\"1\",\"name\":\"Bob\"}}}" https://$API.execute-api.$REGION.amazonaws.com/prod/DynamoDBManager
+    ```   
 11.To can confirm that the item was added to DynamoDB by opening the DynamoDB console, selecting the lambda apigateway table, choosing Explore table items, and checking that the new entry appears.
 <img width="968" height="391" alt="dynamo-item jpg" src="https://github.com/user-attachments/assets/9838167b-e6d1-467b-8a3c-9650b23aa120" />
 
 12.To retrieve all items in the DynamoDB table by using the Lambda API’s list operation. Send the below provided JSON payload to the same API, and it will return every stored item.
 
+```json
+{
+    "operation": "list",
+    "tableName": "lambda-apigateway",
+    "payload": {
+    }
+}
+```
+
 <img width="537" height="427" alt="dynamo-item-list jpg" src="https://github.com/user-attachments/assets/d3609f3a-bc54-4ff6-856b-a31fd68acd4b" />
+
+
 ## Conclusion
 This project demonstrates how AWS managed services can be combined to build a scalable, secure, and cost-effective serverless application without managing any underlying infrastructure.
 By integrating Amazon API Gateway, AWS Lambda, and Amazon DynamoDB, I designed and implemented a RESTful API capable of performing CRUD operations while applying core cloud architecture principles such as least-privilege access, event-driven processing, and serverless scalability.
