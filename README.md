@@ -106,7 +106,9 @@ API can be executed locally using either Postman or Curl. In Postman, choose POS
 $ curl -X POST -d "{\"operation\":\"create\",\"tableName\":\"lambda-apigateway\",\"payload\":{\"Item\":{\"id\":\"1\",\"name\":\"Bob\"}}}" https://$API.execute-api.$REGION.amazonaws.com/prod/DynamoDBManager
 11.To can confirm that the item was added to DynamoDB by opening the DynamoDB console, selecting the lambda apigateway table, choosing Explore table items, and checking that the new entry appears.
 <img width="968" height="391" alt="dynamo-item jpg" src="https://github.com/user-attachments/assets/9838167b-e6d1-467b-8a3c-9650b23aa120" />
+
 12.To retrieve all items in the DynamoDB table by using the Lambda API’s list operation. Send the below provided JSON payload to the same API, and it will return every stored item.
+
 <img width="537" height="427" alt="dynamo-item-list jpg" src="https://github.com/user-attachments/assets/d3609f3a-bc54-4ff6-856b-a31fd68acd4b" />
 ## Conclusion
 This project demonstrates how AWS managed services can be combined to build a scalable, secure, and cost-effective serverless application without managing any underlying infrastructure.
