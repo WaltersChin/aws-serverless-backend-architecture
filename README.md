@@ -3,7 +3,7 @@
 
 This project demonstrates the design and implementation of a serverless backend architecture using Amazon API Gateway, AWS Lambda and Amazon DynamoDB. The solution exposes a REST API capable of performing CRUD operations while leveraging fully managed AWS services to reduce operational overhead, support automatic scaling and enable pay-per-use pricing. The architecture follows core cloud design principles including serverless computing, event-driven processing, least-privilege security and operational scalability.
 ## Lab Overview and High-Level Design
-<img width="1204" height="624" alt="high-level-design jpg" src="https://github.com/user-attachments/assets/be592f54-b3bc-40ec-9536-f46e998ca640" />
+<img width="1204" height="624" alt="high-level-design jpg" src="https://github.com/user-attachments/assets/3c07468c-465f-4779-9953-183bcf8f4b97" />
 
 
 ## Architecture Overview
